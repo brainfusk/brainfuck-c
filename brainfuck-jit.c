@@ -4,12 +4,12 @@
 
 
 #include <stdio.h>
-#include <sys/fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
 #include <malloc.h>
 #include <string.h>
+#include <sys/mman.h>
 
 #define MAX_STACK 1000
 
