@@ -4,6 +4,8 @@ set pagination off
 b debug
 # 开始执行
 r
+# step over debug()
+finish
 # 临时将gdb命令输出定向到指定文件
 set logging file brainfuck-jit-disas.txt
 set logging on
