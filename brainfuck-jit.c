@@ -256,7 +256,8 @@ int main(int argc, char *argv[]) {
                         need_cmp_command = 0;
                     }
                     //jz loop_end(4byte)(偏移地址)
-                    emit(0x74);
+                    emit(0x0f);
+                    emit(0x84);
                     //暂时空出跳转地址
                     pc += 4;
                     //存储jz指令的结束位置即"["的下一条指令开始
@@ -277,7 +278,8 @@ int main(int argc, char *argv[]) {
                     need_cmp_command = 0;
                 }
                 //jnz loop_start(偏移地址)
-                emit(0x75);
+                emit(0x0f);
+                emit(0x85);
                 //keep jump address
                 pc += 4;
                 if (sp == 0) {

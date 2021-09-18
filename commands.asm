@@ -34,11 +34,13 @@ syscall
 mov BYTE [r12+rbx],0x0
 cmp BYTE [r12+rbx],0x0
 ;jz loop_end
-jz 0x1
+jz loop_end
+loop_start:
 ; "]"
 cmp BYTE [r12+rbx],0x0
 ;jnz loop_start
-jnz 0x1
+jnz loop_start
+loop_end:
 pop r12
 pop rbx
 leave

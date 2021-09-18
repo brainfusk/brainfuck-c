@@ -33,7 +33,7 @@ commands.o: commands.asm
 
 # 生成所需指令集合的反汇编形式
 commands.objdump: commands.o
-	objdump -d commands.o >> commands.objdump
+	objdump -d commands.o > commands.objdump
 
 # 生成jit代码的二进制形式和汇编形式
 brainfuck-jit-disas.txt:brainfuck-jit
