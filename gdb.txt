@@ -5,7 +5,7 @@ b 312
 # 开始执行
 r
 # 临时将gdb命令输出定向到指定文件
-set logging file brainfuck-jit.txt
+set logging file brainfuck-jit-disas.txt
 set logging on
 # 输出要执行的jit代码的二进制和汇编代码到文件
 disas /mr code,code+pc

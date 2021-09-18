@@ -12,7 +12,7 @@ xor rbx,rbx
 lea r12,[rbp-0x10000]
 ;fill data buffer with 0
 mov rdi,r12
-movq rcx,0x10000
+mov rcx,0x10000
 xor al,al
 rep stosb
 ; "<"

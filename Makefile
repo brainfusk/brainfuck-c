@@ -1,6 +1,6 @@
 SOURCES:= brainfuck.c brainfuck-jit.c
 ELFS:= ${SOURCES:%.c=%}
-.PHONY: clean all
+.PHONY: clean all valgrind support
 
 all: ${ELFS}
 
@@ -8,19 +8,24 @@ ${ELFS}: %:%.c
 	gcc $< -g -o $@
 
 clean:
-	rm ${ELFS}
+	-rm ${ELFS} commands.o brainfuck-jit-disas.txt commands.objdump
 
 run: brainfuck-jit
-	./brainfuck-jit programs/mandelbrot.bf
+	time ./brainfuck-jit programs/mandelbrot.bf
 
 valgrind: ${ELFS}
-	valgrind --leak-check=full --smc-check=all-non-file ./$@ programs/666.bf
+	@for elf in $^;  \
+	do \
+	valgrind --leak-check=full --smc-check=all-non-file ./$$elf programs/666.bf ;\
+	done
 
-commands.asm: commands.o
+support: commands.objdump brainfuck-jit-disas.txt
+
+commands.o: commands.asm
 	nasm -felf64 commands.asm -o commands.o
 
-commands.dump: commands.o
-	objdump -d commands.o >> commands.dump
+commands.objdump: commands.o
+	objdump -d commands.o >> commands.objdump
 
-brainfuck-jit.txt:brainfuck-jit
+brainfuck-jit-disas.txt:brainfuck-jit
 	gdb -x gdb.txt --args ./brainfuck-jit programs/666.bf

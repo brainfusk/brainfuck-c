@@ -34,9 +34,9 @@ int main(int argc, char *argv[]) {
         perror("must input a bf file");
         exit(-1);
     }
-    char program[50000], memory[30000];
+    char program[50000]={0}, memory[30000]={0};
     //存储跳转信息
-    char *jumpTable[50000];
+    char *jumpTable[50000]={0};
     char *ip = program;
     char *ptr = memory;
     char *filename = argv[1];
