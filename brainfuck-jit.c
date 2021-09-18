@@ -20,21 +20,21 @@
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         die("must input a bf file");
-        exit(-1);
     }
-    char program[50000];
-    //存储跳转信息
-    char *jumpTable[50000];
-    char *ip = program;
     char *filename = argv[1];
     FILE *file = fopen(filename, "rb");
     if (file == NULL) {
         die("error open file %s", filename);
         exit(-1);
     }
+    char *program = NULL;
     size_t read;
     size_t program_size = 0;
     do {
+        program = program ? realloc(program, program_size + 1024) : malloc(1024);
+        if (program == NULL) {
+            die("Error allocating memory: %s.", strerror(errno));
+        }
         read = fread(program + program_size, 1, 1024, file);
         program_size += read;
     } while (read == 1024);
@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
     //mov rbp,rsp
     emit(0x48);
     emit(0x89);
-    emit(0xec);
+    emit(0xe5);
     //栈上开辟空间作为bf的data buffer
     //sub rsp,0x10000
     emit(0x48);
@@ -97,7 +97,10 @@ int main(int argc, char *argv[]) {
     emit(0x89);
     emit(0xe7);
     // mov rcx,0x10000
-    emit(0xb9);
+    emit(0x48);
+    emit(0xc7);
+    emit(0xc1);
+    emit(0x00);
     emit(0x00);
     emit(0x01);
     emit(0x00);
@@ -105,6 +108,9 @@ int main(int argc, char *argv[]) {
     // xor al,al
     emit(0x30);
     emit(0xc0);
+    // rep stosb
+    emit(0xf3);
+    emit(0xaa);
     //can skip cmp ,skip cmp when add/sub is the previous instruction;add/sub will set zf,for optimizing
     int need_cmp_command = 1;
     for (size_t i = 0; i < program_size; i++) {
@@ -121,36 +127,6 @@ int main(int argc, char *argv[]) {
         }
         int amount = 0;
         switch (program[i]) {
-            case '+':
-                amount = 1;
-                while (i + 1 < program_size && program[i + 1] == '+' && amount < 255) {
-                    amount++;
-                    i++;
-                }
-                //add BYTE [r12+rbx],amount
-                emit(0x41);
-                emit(0x80);
-                emit(0x04);
-                emit(0x1c);
-                emit(amount);
-                //don't need cmp to set zf
-                need_cmp_command = 0;
-                break;
-            case '-':
-                amount = 1;
-                while (i + 1 < program_size && program[i + 1] == '-' && amount < 255) {
-                    amount++;
-                    i++;
-                }
-                // sub BYTE [r12+rbx],amount
-                emit(0x41);
-                emit(0x80);
-                emit(0x2c);
-                emit(0x1c);
-                emit(amount);
-                //don't need cmp to set zf
-                need_cmp_command = 0;
-                break;
             case '>':
                 //-128<= cell <=127
                 amount = 1;
@@ -182,6 +158,36 @@ int main(int argc, char *argv[]) {
                 //need cmp to set zf
                 need_cmp_command = 1;
                 break;
+            case '+':
+                amount = 1;
+                while (i + 1 < program_size && program[i + 1] == '+' && amount < 255) {
+                    amount++;
+                    i++;
+                }
+                //add BYTE [r12+rbx],amount
+                emit(0x41);
+                emit(0x80);
+                emit(0x04);
+                emit(0x1c);
+                emit(amount);
+                //don't need cmp to set zf
+                need_cmp_command = 0;
+                break;
+            case '-':
+                amount = 1;
+                while (i + 1 < program_size && program[i + 1] == '-' && amount < 255) {
+                    amount++;
+                    i++;
+                }
+                // sub BYTE [r12+rbx],amount
+                emit(0x41);
+                emit(0x80);
+                emit(0x2c);
+                emit(0x1c);
+                emit(amount);
+                //don't need cmp to set zf
+                need_cmp_command = 0;
+                break;
             case '.':
                 //call sys_write
                 /*
@@ -198,7 +204,9 @@ int main(int argc, char *argv[]) {
                 */
                 //syscall
                 //mov rax 1
-                emit(0xb8);
+                emit(0x48);
+                emit(0xc7);
+                emit(0xc0);
                 emit(0x01);
                 emit(0x00);
                 emit(0x00);
@@ -276,7 +284,7 @@ int main(int argc, char *argv[]) {
                 if (sp == 0) {
                     die("Unexpected loop end.");
                 }
-                size_t loop_start = stack[sp--];
+                size_t loop_start = stack[--sp];
                 //set ] loop_start offset
                 *(int *) (code + pc - 4) = (int) (loop_start - pc);
                 *(int *) (code + loop_start - 4) = (int) (pc - loop_start);
@@ -287,7 +295,29 @@ int main(int argc, char *argv[]) {
                 break;
         }
     }
-    return 0;
+    if (sp != 0) {
+        die("Unterminated loop.");
+    }
+
+    // pop r12
+    emit(0x41);
+    emit(0x54);
+    // pop rbx
+    emit(0x5b);
+    // leave
+    emit(0xc9);
+    // ret
+    emit(0xc3);
+
+    if (mprotect(code, code_len, PROT_EXEC) == -1) {
+        die("Error making program memory executable: %s.", strerror(errno));
+    }
+
+    ((void (*)()) code)();
+
+    free(code);
+
+    free(program);
+
+    return EXIT_SUCCESS;
 }
-
-

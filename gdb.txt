@@ -1,0 +1,15 @@
+# 关闭输出分页，避免阻塞命令
+set pagination off
+# 断点打在执行jit代码之前
+b 312
+# 开始执行
+r
+# 临时将gdb命令输出定向到指定文件
+set logging file brainfuck-jit.txt
+set logging on
+# 输出要执行的jit代码的二进制和汇编代码到文件
+disas /mr code,code+pc
+set logging off
+# 退出
+q
+y

@@ -1,8 +1,7 @@
-;========nasm -felf64 bf.asm -o bf.o=============
 section .text
 ;prepare stack
 push rbp
-mov rsp,rbp
+mov rbp,rsp
 ;reserve bf data buffer
 sub rsp,0x10000
 push rbx
@@ -13,7 +12,7 @@ xor rbx,rbx
 lea r12,[rbp-0x10000]
 ;fill data buffer with 0
 mov rdi,r12
-mov rcx,0x10000
+movq rcx,0x10000
 xor al,al
 rep stosb
 ; "<"
