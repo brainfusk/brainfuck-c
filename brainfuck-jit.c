@@ -102,9 +102,7 @@ int main(int argc, char *argv[]) {
     emit(0x89);
     emit(0xe7);
     // mov rcx,0x10000
-    emit(0x48);
-    emit(0xc7);
-    emit(0xc1);
+    emit(0xb9);
     emit(0x00);
     emit(0x00);
     emit(0x01);
@@ -209,9 +207,7 @@ int main(int argc, char *argv[]) {
                 */
                 //syscall
                 //mov rax 1
-                emit(0x48);
-                emit(0xc7);
-                emit(0xc0);
+                emit(0xb8);
                 emit(0x01);
                 emit(0x00);
                 emit(0x00);
@@ -260,8 +256,7 @@ int main(int argc, char *argv[]) {
                         need_cmp_command = 0;
                     }
                     //jz loop_end(4byte)(偏移地址)
-                    emit(0x0f);
-                    emit(0x84);
+                    emit(0x74);
                     //暂时空出跳转地址
                     pc += 4;
                     //存储jz指令的结束位置即"["的下一条指令开始
@@ -282,8 +277,7 @@ int main(int argc, char *argv[]) {
                     need_cmp_command = 0;
                 }
                 //jnz loop_start(偏移地址)
-                emit(0x0f);
-                emit(0x85);
+                emit(0x75);
                 //keep jump address
                 pc += 4;
                 if (sp == 0) {
@@ -306,7 +300,7 @@ int main(int argc, char *argv[]) {
 
     // pop r12
     emit(0x41);
-    emit(0x54);
+    emit(0x5c);
     // pop rbx
     emit(0x5b);
     // leave
