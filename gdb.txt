@@ -1,7 +1,7 @@
 # 关闭输出分页，避免阻塞命令
 set pagination off
 # 断点打在执行jit代码之前
-b 312
+b debug
 # 开始执行
 r
 # 临时将gdb命令输出定向到指定文件
