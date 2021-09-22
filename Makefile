@@ -37,4 +37,4 @@ commands.objdump: commands.o
 
 # 生成jit代码的二进制形式和汇编形式
 brainfuck-jit-disas.txt:brainfuck-jit
-	gdb -x gdb.txt --args ./brainfuck-jit programs/666.bf
+	gdb -q -x gdb.txt --args ./brainfuck-jit programs/666.bf

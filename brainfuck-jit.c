@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
     emit(0x4c);
     emit(0x89);
     emit(0xe7);
-    // mov rcx,0x10000
+    // mov rcx,0x10000 ==> mov ecx,0x10000
     emit(0xb9);
     emit(0x00);
     emit(0x00);
@@ -206,7 +206,7 @@ int main(int argc, char *argv[]) {
                 count, 指定要写入的字节数
                 */
                 //syscall
-                //mov rax 1
+                //mov rax 1 ==> mov eax,1
                 emit(0xb8);
                 emit(0x01);
                 emit(0x00);
@@ -310,7 +310,7 @@ int main(int argc, char *argv[]) {
     // ret
     emit(0xc3);
 
-    if (mprotect(code, code_len, PROT_EXEC) == -1) {
+    if (mprotect(code, code_len, PROT_EXEC|PROT_READ) == -1) {
         die("Error making program memory executable: %s.", strerror(errno));
     }
     //gdb debug断点使用,b debug,避免使用代码行数这种不可扩展的方式设置断点

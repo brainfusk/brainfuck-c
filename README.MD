@@ -2,7 +2,7 @@
 
    1.1 编写所有需要用的nasm汇编代码
 
-   1.2 使用nasm生成64位目标文件
+   1.2 使用nasm生成64位目标文件(目标文件会被部分优化，寄存器可能使用低位，如rax->eax)
 
    1.3 使用objdump -d 反汇编出相应的16进制机器码，参照反汇编代码生成jit代码存入数组即可
    
@@ -33,7 +33,8 @@
     ```
    1.3 以汇编格式编码指定范围内存并显示(适用于查看生成的jit代码，可同时显示二进制和对应汇编代码，推荐使用)
    ```shell
-   gdb > b 316
+   gdb > b debug
+   gdb > finish
    gdb > disas /mr code,code+pc
    ```
    
@@ -60,7 +61,7 @@
    valgrind --leak-check=full --smc-check=all-non-file ./brainfuck-jit programs/mandelbrot.bf 
    ```
    
-6. jz/jnz指令在汇编中为标签，在机器码中为4字节偏移地址
+6. jz/jnz指令在汇编中为标签，在机器码中为偏移地址(注意跳转指令的选择0x0f84 0x0f85与0x74 0x75的区别)
 
 7. 输出jit辅助信息
 
@@ -108,3 +109,13 @@
 9. 参考列表
 
    https://github.com/prplz/brainfuck-jit
+
+10. 跳转指令的区别:
+
+    10.1 指令0x74 0x75 与 0x0f84 0x0f85的区别:
+
+    操作数大小范围不同
+
+    0x74   JE rel8(8位有符号数)
+
+    0x0f84 JE rel32(32位有符号数)

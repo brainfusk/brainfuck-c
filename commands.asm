@@ -38,6 +38,8 @@ jz loop_end
 loop_start:
 ; "]"
 cmp BYTE [r12+rbx],0x0
+;填充127个NOP，避免生成短跳转的jz/jnz
+times 127 xchg eax, eax
 ;jnz loop_start
 jnz loop_start
 loop_end:
