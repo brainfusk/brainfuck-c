@@ -138,8 +138,8 @@ int main(int argc, char *argv[]) {
                     i++;
                 }
                 //amount ~[-128,127]
-                //lea bx,[rbx+amount]
-                emit(0x66);
+                //lea rbx,[rbx+amount]
+                emit(0x48);
                 emit(0x8d);
                 emit(0x5b);
                 emit(amount);
@@ -153,8 +153,8 @@ int main(int argc, char *argv[]) {
                     i++;
                 }
                 //amount ~[-128,127]
-                //lea bx,[rbx+amount]
-                emit(0x66);
+                //lea rbx,[rbx+amount]
+                emit(0x48);
                 emit(0x8d);
                 emit(0x5b);
                 emit(amount);

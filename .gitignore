@@ -142,3 +142,4 @@ brainfuck-jit
 commands.o
 commands.objdump
 brainfuck-jit-disas.txt
+vgcore.*

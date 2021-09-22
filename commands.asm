@@ -16,9 +16,9 @@ mov rcx,0x10000
 xor al,al
 rep stosb
 ; "<"
-lea bx,[rbx-0x1]
+lea rbx,[rbx-0x1]
 ; ">"
-lea bx,[rbx+0x1]
+lea rbx,[rbx+0x1]
 ; "+"
 add BYTE [r12+rbx],0x1
 ; "-"
