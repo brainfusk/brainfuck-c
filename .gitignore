@@ -144,3 +144,4 @@ commands.objdump
 brainfuck-jit-disas.txt
 vgcore.*
 cachegrind.*
+core*
