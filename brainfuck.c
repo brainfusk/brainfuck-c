@@ -105,5 +105,6 @@ int main(int argc, char *argv[]) {
         }
         ip++;
     }
+    free(program);
     return 0;
 }

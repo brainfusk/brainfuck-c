@@ -8,16 +8,24 @@ ${ELFS}: %:%.c
 	gcc $< -g -o $@
 
 clean:
-	-rm ${ELFS} commands.o brainfuck-jit-disas.txt commands.objdump
+	-rm ${ELFS} commands.o brainfuck-jit-disas.txt commands.objdump cachegrind.* vgcore.*
 
 run: brainfuck-jit
 	time ./brainfuck-jit programs/mandelbrot.bf
 
-# 内存泄漏检查
-valgrind: ${ELFS}
+# 内存泄漏检查,use strict mode,interupt when error
+memcheck: ${ELFS}
+	@set -e ;\
+	for elf in $^;  \
+	do \
+	valgrind --leak-check=full --smc-check=all --error-exitcode=1 ./$$elf programs/666.bf ;\
+	done
+
+# 内存泄漏检查,interupt when error
+cachegrind: ${ELFS}
 	@for elf in $^;  \
 	do \
-	valgrind --leak-check=full --smc-check=all-non-file ./$$elf programs/666.bf ;\
+	valgrind --tool=cachegrind --branch-sim=yes ./$$elf programs/mandelbrot.bf ;\
 	done
 
 support: commands.objdump brainfuck-jit-disas.txt
