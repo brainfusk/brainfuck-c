@@ -52,6 +52,8 @@
    ```shell 
    > gdb brainfuck-jit core 
    gdb> bt 或 where
+   # 若进入无法定位源码的位置,如jit代码内部,则可反汇编出附近代码配合brainfuck-jit-disas.txt中的汇编代码进行分析
+   gdb> disas $pc,+20
    ```
 
 5. 内存泄漏检查
