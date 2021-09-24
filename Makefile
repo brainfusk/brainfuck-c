@@ -1,6 +1,10 @@
 SOURCES:= brainfuck.c brainfuck-jit.c
 ELFS:= ${SOURCES:%.c=%}
-.PHONY: clean all valgrind support compare
+CACHEGRINDS:=${SOURCES:%.c=cachegrind.%.txt}
+MEMCHECKS:=${SOURCES:%.c=memcheck.%.xml}
+PERFORMANCES:=${SOURCES:%c=performance.%.txt}
+RUN:=${SOURCES:%.c=%-run}
+.PHONY: clean all valgrind support compare cachegrind memcheck performance run ${RUN}
 
 all: ${ELFS}
 
@@ -8,25 +12,27 @@ ${ELFS}: %:%.c
 	gcc $< -g -o $@
 
 clean:
-	-rm ${ELFS} commands.o brainfuck-jit-disas.txt commands.objdump cachegrind.* vgcore.*
+	-rm ${ELFS} commands.o brainfuck-jit-disas.txt commands.objdump cachegrind.* vgcore.* core* memcheck.*
 
-run: brainfuck-jit
-	time ./brainfuck-jit programs/mandelbrot.bf
+run:${RUN}
 
-# 内存泄漏检查,use strict mode,interupt when error
-memcheck: ${ELFS}
-	@set -e ;\
-	for elf in $^;  \
-	do \
-	valgrind --leak-check=full --smc-check=all --error-exitcode=1 ./$$elf programs/666.bf ;\
-	done
+${RUN}: %-run:%
+	time=`time ./$< programs/sierpinski.bf` \
+	echo $$time
 
-# 内存泄漏检查,interupt when error
-cachegrind: ${ELFS}
-	@for elf in $^;  \
-	do \
-	valgrind --tool=cachegrind --branch-sim=yes ./$$elf programs/mandelbrot.bf ;\
-	done
+cachegrind: ${CACHEGRINDS}
+
+memcheck: ${MEMCHECKS}
+
+performance: ${PERFORMANCES}
+
+# 内存泄漏检查,use strict mode,interupt when error,output file
+${MEMCHECKS}: memcheck.%.xml:%
+	valgrind --leak-check=full --smc-check=all --error-exitcode=1 --xml-file=$@ --xml=yes ./$< programs/666.bf
+
+# 内存泄漏检查,output file
+${CACHEGRINDS}: cachegrind.%.txt:%
+	valgrind --tool=cachegrind --branch-sim=yes --log-file=$@ ./$< programs/sierpinski.bf
 
 support: commands.objdump brainfuck-jit-disas.txt
 
@@ -46,3 +52,7 @@ commands.objdump: commands.o
 # 生成jit代码的二进制形式和汇编形式
 brainfuck-jit-disas.txt:brainfuck-jit
 	gdb -q -x gdb.txt --args ./brainfuck-jit programs/666.bf
+# CFLAGS get result from time
+${PERFORMANCES}: performance.%.txt:%
+	time=`time ./$< programs/sierpinski.bf` \
+	echo $$time
