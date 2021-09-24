@@ -30,7 +30,6 @@ int main(int argc, char *argv[]) {
     FILE *file = fopen(filename, "rb");
     if (file == NULL) {
         die("error open file %s", filename);
-        exit(-1);
     }
     char *program = NULL;
     size_t read;
@@ -45,7 +44,6 @@ int main(int argc, char *argv[]) {
     } while (read == 1024);
     if (ferror(file)) {
         die("error reading file %s", filename);
-        exit(-1);
     }
     fclose(file);
     //prepare jit code memory
@@ -255,7 +253,7 @@ int main(int argc, char *argv[]) {
                         emit(0x00);
                         need_cmp_command = 0;
                     }
-                    //jz loop_end(4byte)(偏移地址)
+                    //jz loop_end offset(4byte)(偏移量) not jz rel8(0x74)
                     emit(0x0f);
                     emit(0x84);
                     //暂时空出跳转地址
@@ -277,10 +275,10 @@ int main(int argc, char *argv[]) {
                     emit(0x00);
                     need_cmp_command = 0;
                 }
-                //jnz loop_start(偏移地址)
+                //jnz loop_start offset(偏移量) not jnz rel8(0x75)
                 emit(0x0f);
                 emit(0x85);
-                //keep jump address
+                //reserve jump address space
                 pc += 4;
                 if (sp == 0) {
                     die("Unexpected loop end.");
@@ -288,8 +286,8 @@ int main(int argc, char *argv[]) {
                 size_t loop_start = stack[--sp];
                 //set ] loop_start offset
                 *(int *) (code + pc - 4) = (int) (loop_start - pc);
-                *(int *) (code + loop_start - 4) = (int) (pc - loop_start);
                 //set matched [ loop_end offset
+                *(int *) (code + loop_start - 4) = (int) (pc - loop_start);
                 break;
             default:
                 //ignore unrecognized token
