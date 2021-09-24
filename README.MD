@@ -81,7 +81,7 @@
    commands.asm
    # commands.asm经过nasm汇编后的反汇编格式，方便对照编写相关指令
    commands.objdump
-   # 用于获取jit代码的二进制和汇编形式
+   # 用于获取jit代码的二进制和汇编形式的gdb命令文件
    gdb.txt
    # 编译 运行 内存检查 生成jit辅助信息
    Makefile
