@@ -30,21 +30,19 @@ void prepareJumpTable(char *program, size_t program_size, char **jumpTable) {
         ptr++;
     }
     if (sp != 0) {
-        perror("stack not balanced");
+        die("stack not balanced");
     }
 }
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
-        perror("must input a bf file");
-        exit(-1);
+        die("must input a bf file");
     }
     char memory[30000] = {0};
     char *filename = argv[1];
     FILE *file = fopen(filename, "rb");
     if (file == NULL) {
-        printf("error open file %s", filename);
-        exit(-1);
+        die("error open file %s", filename);
     }
     char *program = NULL;
     size_t read;
@@ -58,8 +56,7 @@ int main(int argc, char *argv[]) {
         program_size += read;
     } while (read == 1024);
     if (ferror(file)) {
-        printf("error reading file %s", filename);
-        exit(-1);
+        die("error reading file %s", filename);
     }
     fclose(file);
     char *ip = program;
@@ -106,5 +103,5 @@ int main(int argc, char *argv[]) {
         ip++;
     }
     free(program);
-    return 0;
+    return EXIT_SUCCESS;
 }
