@@ -145,3 +145,4 @@ brainfuck-jit-disas.txt
 vgcore.*
 cachegrind.*
 core*
+memcheck.*
