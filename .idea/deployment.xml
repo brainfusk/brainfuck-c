@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="ubuntu20.04-debug (8b00fdee-d4f2-4fec-b2a6-0db5e2029f8a)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/deploy/projects/brainfuck-c" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug-remote" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-release" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>

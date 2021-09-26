@@ -9,7 +9,11 @@ DOCKER_IMAGE?=techzealot/ubuntu20.04-c
 
 DOCKER_NAME?=brainfuck-c
 
-.PHONY: clean all valgrind support compare cachegrind memcheck performance run ${RUN} docker build_docker
+MOUNT_DIR?=$(shell pwd)
+
+SSHD_PORT?=2222
+
+.PHONY: clean all valgrind support compare cachegrind memcheck performance run ${RUN} docker build-docker exec-docker
 
 all: ${ELFS}
 
@@ -62,8 +66,17 @@ ${PERFORMANCES}: performance.%.txt:%
 	time=`time ./$< programs/sierpinski.bf` \
 	echo $$time
 
-docker:
-	docker run --rm -it --mount type=bind,source=$(shell pwd),destination=/mnt --name ${DOCKER_NAME} ${DOCKER_IMAGE}
+# 伪目标不能相互依赖，否则依赖的目标每次都会执行
+exec-docker:
+	docker exec -it ${DOCKER_NAME} bash
 
-build_docker:
+# we can debug in /home/deploy/projects ,and we mount the project in /mnt for cli user
+# clion debug container
+# https://blog.jetbrains.com/clion/2020/01/using-docker-with-clion/
+# https://www.jetbrains.com/help/clion/clion-toolchains-in-docker.html
+docker:
+	-docekr stop ${DOCKER_NAME}
+	docker run --rm -d --cap-add sys_ptrace -p127.0.0.1:${SSHD_PORT}:22 --mount type=bind,source=${MOUNT_DIR},destination=/mnt --name ${DOCKER_NAME} ${DOCKER_IMAGE}
+
+build-docker:
 	docker build -t ${DOCKER_IMAGE} .
