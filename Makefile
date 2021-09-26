@@ -4,7 +4,12 @@ CACHEGRINDS:=${SOURCES:%.c=cachegrind.%.txt}
 MEMCHECKS:=${SOURCES:%.c=memcheck.%.xml}
 PERFORMANCES:=${SOURCES:%c=performance.%.txt}
 RUN:=${SOURCES:%.c=%-run}
-.PHONY: clean all valgrind support compare cachegrind memcheck performance run ${RUN}
+
+DOCKER_IMAGE?=techzealot/ubuntu20.04-c
+
+DOCKER_NAME?=brainfuck-c
+
+.PHONY: clean all valgrind support compare cachegrind memcheck performance run ${RUN} docker build_docker
 
 all: ${ELFS}
 
@@ -56,3 +61,9 @@ brainfuck-jit-disas.txt:brainfuck-jit
 ${PERFORMANCES}: performance.%.txt:%
 	time=`time ./$< programs/sierpinski.bf` \
 	echo $$time
+
+docker:
+	docker run --rm -it --mount type=bind,source=$(shell pwd),destination=/mnt --name ${DOCKER_NAME} ${DOCKER_IMAGE}
+
+build_docker:
+	docker build -t ${DOCKER_IMAGE} .
