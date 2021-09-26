@@ -18,7 +18,7 @@
 #define die(...) do { fprintf(stderr, __VA_ARGS__); fputc('\n', stderr); exit(EXIT_FAILURE); } while (0)
 
 
-int debug(){
+int debug() {
     return 1;
 }
 
@@ -131,11 +131,10 @@ int main(int argc, char *argv[]) {
             case '>':
                 //-128<= cell <=127
                 amount = 1;
-                while (i + 1 < program_size && program[i + 1] == '>' && amount < 127) {
+                while (i + 1 < program_size && program[i + 1] == '>') {
                     amount++;
                     i++;
                 }
-                //amount ~[-128,127]
                 //lea rbx,[rbx+amount]
                 emit(0x48);
                 emit(0x8d);
@@ -146,11 +145,10 @@ int main(int argc, char *argv[]) {
                 break;
             case '<':
                 amount = -1;
-                while (i + 1 < program_size && program[i + 1] == '<' && amount > -128) {
+                while (i + 1 < program_size && program[i + 1] == '<') {
                     amount--;
                     i++;
                 }
-                //amount ~[-128,127]
                 //lea rbx,[rbx+amount]
                 emit(0x48);
                 emit(0x8d);
@@ -308,7 +306,7 @@ int main(int argc, char *argv[]) {
     // ret
     emit(0xc3);
 
-    if (mprotect(code, code_len, PROT_EXEC|PROT_READ) == -1) {
+    if (mprotect(code, code_len, PROT_EXEC | PROT_READ) == -1) {
         die("Error making program memory executable: %s.", strerror(errno));
     }
     //gdb debug断点使用,b debug,避免使用代码行数这种不可扩展的方式设置断点
