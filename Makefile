@@ -1,4 +1,4 @@
-SOURCES:= brainfuck.c brainfuck-jit.c
+SOURCES:= brainfuck.c brainfuck-jit.c brainfuck-dynasm-jit.c
 ELFS:= ${SOURCES:%.c=%}
 CACHEGRINDS:=${SOURCES:%.c=cachegrind.%.txt}
 MEMCHECKS:=${SOURCES:%.c=memcheck.%.xml}
@@ -20,13 +20,17 @@ all: ${ELFS}
 ${ELFS}: %:%.c
 	gcc $< -g -o $@
 
+brainfuck-dynasm-jit.c: brainfuck-dynasm.c
+	git submodule update
+	luajit LuaJIT/dynasm/dynasm.lua -o $@ -D X64 $<
+
 clean:
-	-rm ${ELFS} commands.o brainfuck-jit-disas.txt commands.objdump cachegrind.* vgcore.* core* memcheck.*
+	-rm ${ELFS} commands.o brainfuck-jit-disas.txt commands.objdump cachegrind.* vgcore.* core* memcheck.* brainfuck-dynasm-jit.c
 
 run:${RUN}
 
-${RUN}: %-run.txt:%
-	(time ./$< programs/sierpinski.bf;)2>$@
+${RUN}: %-run:%
+	./$< programs/sierpinski.bf
 
 cachegrind: ${CACHEGRINDS}
 
@@ -36,7 +40,7 @@ performance: ${PERFORMANCES}
 
 # 内存泄漏检查,use strict mode,interupt when error,output file
 ${MEMCHECKS}: memcheck.%.xml:%
-	valgrind --leak-check=full --smc-check=all --error-exitcode=1 --xml-file=$@ --xml=yes ./$< programs/666.bf
+	valgrind --leak-check=full --smc-check=all --error-exitcode=1 --xml-file=$@ --xml=yes ./$< programs/sierpinski.bf
 
 # 内存泄漏检查,output file
 ${CACHEGRINDS}: cachegrind.%.txt:%

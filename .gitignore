@@ -139,6 +139,7 @@ Mkfile.old
 dkms.conf
 brainfuck
 brainfuck-jit
+brainfuck-dynasm-jit*
 commands.o
 commands.objdump
 brainfuck-jit-disas.txt

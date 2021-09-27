@@ -32,7 +32,15 @@ RUN set -x \
     && echo ${TZ} > /etc/timezone \
     && apt-get update \
     && apt-get install -y ssh \
-      build-essential nasm valgrind binutils git net-tools lsof vim \
+      build-essential  \
+      nasm  \
+      valgrind  \
+      binutils  \
+      git  \
+      net-tools  \
+      lsof  \
+      vim  \
+      luajit \
       gcc \
       g++ \
       gdb \
