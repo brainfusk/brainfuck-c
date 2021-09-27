@@ -66,16 +66,17 @@ ${PERFORMANCES}: performance.%.txt:%
 	time=`time ./$< programs/sierpinski.bf` \
 	echo $$time
 
-# 伪目标不能相互依赖，否则依赖的目标每次都会执行
+# 伪目标如果相互依赖，依赖的目标每次都会执行
+# use first non-root user,you can change to root by su root
 exec-docker:
-	docker exec -it ${DOCKER_NAME} bash
+	docker exec -it --user 1000 ${DOCKER_NAME} bash
 
 # we can debug in /home/deploy/projects ,and we mount the project in /mnt for cli user
 # clion debug container
 # https://blog.jetbrains.com/clion/2020/01/using-docker-with-clion/
 # https://www.jetbrains.com/help/clion/clion-toolchains-in-docker.html
 docker:
-	-docekr stop ${DOCKER_NAME}
+	-docker stop ${DOCKER_NAME}
 	docker run --rm -d --cap-add sys_ptrace -p127.0.0.1:${SSHD_PORT}:22 --mount type=bind,source=${MOUNT_DIR},destination=/mnt --name ${DOCKER_NAME} ${DOCKER_IMAGE}
 
 build-docker:
