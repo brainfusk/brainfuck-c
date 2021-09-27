@@ -1,4 +1,14 @@
-1. 机器码生成思路
+1. 使用
+   ```shell
+   git clone git@github.com:brainfusk/brainfuck-c.git --recursive
+   make build-docker
+   make docker
+   # 进入docker
+   make exec-docker
+   # 可执行各种make目标进行测试
+   make support && make cachegrind && make run
+   ```
+2. 机器码生成思路
 
    1.1 编写所有需要用的nasm汇编代码
 
@@ -6,7 +16,7 @@
 
    1.3 使用objdump -d 反汇编出相应的16进制机器码，参照反汇编代码生成jit代码存入数组即可
    
-2. jit运行原理
+3. jit运行原理
 
    2.1 mmap + mprotect
 
@@ -20,7 +30,7 @@
    jz/jnz的跳转地址使用栈结构进行计算保存，栈中存放各个跳转位置的偏移量，jz/jnz的实际参数为跳转地址与当前位置的偏移量
    ```
    
-3. 查看生成的机器码和反汇编代码
+4. 查看生成的机器码和反汇编代码
 
    1.1 输出机器码的字节数
 
@@ -38,7 +48,7 @@
    gdb > disas /mr code,code+pc
    ```
    
-4. Linux core dump开启与gdb调试
+5. Linux core dump开启与gdb调试
 
    4.1 关闭系统内存限制
 
@@ -56,21 +66,20 @@
    gdb> disas $pc,+20
    ```
 
-5. 内存泄漏检查
+6. 内存泄漏检查
 
    支持jit代码运行: --smc-check=all-non-file
    ```shell
    valgrind --leak-check=full --smc-check=all-non-file ./brainfuck-jit programs/mandelbrot.bf 
    ```
    
-6. jz/jnz指令在汇编中为标签，在机器码中为偏移地址(注意跳转指令的选择0x0f84 0x0f85与0x74 0x75的区别)
+7. jz/jnz指令在汇编中为标签，在机器码中为偏移地址(注意跳转指令的选择0x0f84 0x0f85与0x74 0x75的区别)
 
-7. 输出jit辅助信息
+8. 输出jit辅助信息
 
-   执行以下命令生成辅助文件
+   进入docker后执行以下命令生成辅助文件
    ```shell
    make clean
-   make all
    make support
    ```
    文件清单：
@@ -89,30 +98,26 @@
    programs/
    ```
    
-8. 性能对比
+9. 性能对比
 
    运行programs/mandelbrot.bf性能对比
 
-   
-   
-   |     程序      |       优化       | 耗时/s |
-   | :-----------: | :--------------: | :----: |
-   |   brainfuck   |       -o0        |        |
-   |   brainfuck   |       -o1        |        |
-   |   brainfuck   |       -o2        |        |
-   |   brainfuck   |       -o3        |        |
-   | brainfuck-jit | peephole/jit/-o0 |        |
-   | brainfuck-jit |       -o1        |        |
-   | brainfuck-jit |       -o2        |        |
-   | brainfuck-jit |       -o3        |        |
-   
-   
-   
-9. 参考列表
+    |     程序      |       优化       | 耗时/s |
+    | :-----------: | :--------------: | :----: |
+    |   brainfuck   |       -o0        |        |
+    |   brainfuck   |       -o1        |        |
+    |   brainfuck   |       -o2        |        |
+    |   brainfuck   |       -o3        |        |
+    | brainfuck-jit | peephole/jit/-o0 |        |
+    | brainfuck-jit |       -o1        |        |
+    | brainfuck-jit |       -o2        |        |
+    | brainfuck-jit |       -o3        |        |
 
-   https://github.com/prplz/brainfuck-jit
+10. 参考列表
 
-10. 跳转指令的区别:
+    https://github.com/prplz/brainfuck-jit
+
+11. 跳转指令的区别:
 
     10.1 指令0x74 0x75 与 0x0f84 0x0f85的区别:
 

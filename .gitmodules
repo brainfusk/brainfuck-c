@@ -1,0 +1,3 @@
+[submodule "LuaJIT"]
+	path = LuaJIT
+	url = git@github.com:LuaJIT/LuaJIT.git

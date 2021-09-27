@@ -126,7 +126,7 @@ int main(int argc, char *argv[]) {
             free(code);
             code = new_code;
         }
-        int amount = 0;
+        int amount;
         switch (program[i]) {
             case '>':
                 //-128<= cell <=127

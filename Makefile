@@ -25,9 +25,8 @@ clean:
 
 run:${RUN}
 
-${RUN}: %-run:%
-	time=`time ./$< programs/sierpinski.bf` \
-	echo $$time
+${RUN}: %-run.txt:%
+	(time ./$< programs/sierpinski.bf;)2>$@
 
 cachegrind: ${CACHEGRINDS}
 
@@ -68,8 +67,9 @@ ${PERFORMANCES}: performance.%.txt:%
 
 # 伪目标如果相互依赖，依赖的目标每次都会执行
 # use first non-root user,you can change to root by su root
+# set exec workdir to mount path /mnt
 exec-docker:
-	docker exec -it --user 1000 ${DOCKER_NAME} bash
+	docker exec -it --user 1000 -w /mnt ${DOCKER_NAME} bash
 
 # we can debug in /home/deploy/projects ,and we mount the project in /mnt for cli user
 # clion debug container
