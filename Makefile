@@ -1,17 +1,22 @@
-SOURCES:= brainfuck.c brainfuck-jit.c brainfuck-dynasm-jit.c
-ELFS:= ${SOURCES:%.c=%}
-CACHEGRINDS:=${SOURCES:%.c=cachegrind.%.txt}
-MEMCHECKS:=${SOURCES:%.c=memcheck.%.xml}
-PERFORMANCES:=${SOURCES:%c=performance.%.txt}
-RUN:=${SOURCES:%.c=%-run}
+SOURCES := brainfuck.c brainfuck-jit.c brainfuck-dynasm-jit.c
+ELFS := ${SOURCES:%.c=%}
+CACHEGRINDS := ${SOURCES:%.c=cachegrind.%.txt}
+MEMCHECKS := ${SOURCES:%.c=memcheck.%.xml}
+PERFORMANCES := ${SOURCES:%c=performance.%.txt}
+RUN:= ${SOURCES:%.c=%-run}
 
-DOCKER_IMAGE?=techzealot/ubuntu20.04-c
+DOCKER_IMAGE ?= techzealot/ubuntu20.04-c
 
-DOCKER_NAME?=brainfuck-c
+DOCKER_NAME ?= brainfuck-c
 
-MOUNT_DIR?=$(shell pwd)
+MOUNT_DIR ?= $(shell pwd)
 
-SSHD_PORT?=2222
+SSHD_PORT ?= 2222
+
+# comment this to test programs/mandelbrot.bf (non jit version is very slow)
+BF_PROGRAM := programs/sierpinski.bf
+
+BF_PROGRAM ?= programs/mandelbrot.bf
 
 .PHONY: clean all valgrind support compare cachegrind memcheck performance run ${RUN} docker build-docker exec-docker
 
@@ -40,11 +45,11 @@ performance: ${PERFORMANCES}
 
 # 内存泄漏检查,use strict mode,interupt when error,output file
 ${MEMCHECKS}: memcheck.%.xml:%
-	valgrind --leak-check=full --smc-check=all --error-exitcode=1 --xml-file=$@ --xml=yes ./$< programs/sierpinski.bf
+	valgrind --leak-check=full --smc-check=all --error-exitcode=1 --xml-file=$@ --xml=yes ./$< ${BF_PROGRAM}
 
-# 内存泄漏检查,output file
+# cpu多级缓存及分支预测模拟分析
 ${CACHEGRINDS}: cachegrind.%.txt:%
-	valgrind --tool=cachegrind --branch-sim=yes --log-file=$@ ./$< programs/sierpinski.bf
+	valgrind --tool=cachegrind --branch-sim=yes --log-file=$@ ./$< ${BF_PROGRAM}
 
 support: commands.objdump brainfuck-jit-disas.txt
 
@@ -61,12 +66,12 @@ commands.o: commands.asm
 commands.objdump: commands.o
 	objdump -d commands.o > commands.objdump
 
-# 生成jit代码的二进制形式和汇编形式
+# 生成jit代码的二进制形式和汇编形式,使用programs/666.bf便于分析问题
 brainfuck-jit-disas.txt:brainfuck-jit
 	gdb -q -x gdb.txt --args ./brainfuck-jit programs/666.bf
 # CFLAGS get result from time
 ${PERFORMANCES}: performance.%.txt:%
-	time=`time ./$< programs/sierpinski.bf` \
+	time=`time ./$< ${BF_PROGRAM}` \
 	echo $$time
 
 # 伪目标如果相互依赖，依赖的目标每次都会执行
