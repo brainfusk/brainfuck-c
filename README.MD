@@ -68,9 +68,8 @@
 
 6. 内存泄漏检查
 
-   支持jit代码运行: --smc-check=all-non-file
    ```shell
-   valgrind --leak-check=full --smc-check=all-non-file ./brainfuck-jit programs/mandelbrot.bf 
+   valgrind --leak-check=full --smc-check=all ./brainfuck-jit programs/mandelbrot.bf 
    ```
    
 7. jz/jnz指令在汇编中为标签，在机器码中为偏移地址(注意跳转指令的选择0x0f84 0x0f85与0x74 0x75的区别)
