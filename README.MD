@@ -1,6 +1,6 @@
 1. 使用
    ```shell
-   git clone git@github.com:brainfusk/brainfuck-c.git --recursive
+   git clone --recurse-submodules git@github.com:brainfusk/brainfuck-c.git
    make build-docker
    make docker
    # 进入docker
@@ -10,7 +10,7 @@
    ```
 2. 机器码生成思路
 
-   1.1 编写所有需要用的nasm汇编代码
+   1.1 编写所有需要用到的nasm汇编指令的组合版，仅用作反汇编获取对应指令的二进制形式，避免查汇编指令手册
 
    1.2 使用nasm生成64位目标文件(目标文件会被部分优化，寄存器可能使用低位，如rax->eax)
 
@@ -130,3 +130,14 @@
     12.1 jit性能更好原因分析
 
     指令更少
+13. git子模块使用
+
+    ```shell
+    # 添加子模块
+    git submodule add https://github.com/LuaJIT/LuaJIT.git
+    # 同步子模块
+    git submodule update --remote
+    # 设置子模块同步的分支 会在.gitmodules文件新增'branch = v2.1'
+    git config -f .gitmodules submodule.LuaJIT.branch v2.1
+    ```
+    

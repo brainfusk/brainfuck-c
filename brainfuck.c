@@ -1,5 +1,6 @@
 //
 // Created by techzealot on 2021/6/25.
+// not one pass,two pass
 //
 
 #include <stdio.h>

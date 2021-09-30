@@ -139,6 +139,7 @@ Mkfile.old
 dkms.conf
 brainfuck
 brainfuck-jit
+brainfuck-onepass
 brainfuck-dynasm-jit*
 commands.o
 commands.objdump

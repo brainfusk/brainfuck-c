@@ -1,4 +1,4 @@
-SOURCES := brainfuck.c brainfuck-jit.c brainfuck-dynasm-jit.c
+SOURCES := brainfuck.c brainfuck-jit.c brainfuck-dynasm-jit.c brainfuck-onepass.c
 ELFS := ${SOURCES:%.c=%}
 CACHEGRINDS := ${SOURCES:%.c=cachegrind.%.txt}
 MEMCHECKS := ${SOURCES:%.c=memcheck.%.xml}
@@ -13,7 +13,7 @@ MOUNT_DIR ?= $(shell pwd)
 
 SSHD_PORT ?= 2222
 
-# comment this to test programs/mandelbrot.bf (non jit version is very slow)
+# comment this to test programs/mandelbrot.bf (notice: non jit version is very slow)
 BF_PROGRAM := programs/sierpinski.bf
 
 BF_PROGRAM ?= programs/mandelbrot.bf
