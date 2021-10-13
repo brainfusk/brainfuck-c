@@ -1,6 +1,6 @@
 1. 使用
    ```shell
-   git clone --recurse-submodules git@github.com:brainfusk/brainfuck-c.git
+   git clone --recurse-submodules https://github.com/brainfusk/brainfuck-c.git
    make build-docker
    make docker
    # 进入docker

@@ -98,7 +98,12 @@ int main(int argc, char *argv[]) {
                     ip = jumpTable[ip - program];
                 }
                 break;
+            case '#':
+                //we can use # to print context data pointer and nearby data ;debug only
+                break;
+            default:
                 //ignore unrecognized token
+                break;
         }
         ip++;
     }

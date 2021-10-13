@@ -129,7 +129,6 @@ int main(int argc, char *argv[]) {
         int amount;
         switch (program[i]) {
             case '>':
-                //-128<= cell <=127
                 amount = 1;
                 while (i + 1 < program_size && program[i + 1] == '>') {
                     amount++;
@@ -229,7 +228,7 @@ int main(int argc, char *argv[]) {
                 emit(0x05);
                 break;
             case ',':
-                //ignore ,
+                //ignore ','
                 break;
             case '[':
                 if (i < program_size - 2 && (program[i + 1] == '+' || program[i + 1] == '-') && program[i + 2] == ']') {
@@ -286,6 +285,10 @@ int main(int argc, char *argv[]) {
                 *(int *) (code + pc - 4) = (int) (loop_start - pc);
                 //set matched [ loop_end offset
                 *(int *) (code + loop_start - 4) = (int) (pc - loop_start);
+                break;
+            case '#':
+                // int3 (add breakpoint)
+                emit(0xcc);
                 break;
             default:
                 //ignore unrecognized token

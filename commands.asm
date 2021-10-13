@@ -43,6 +43,8 @@ times 127 xchg eax, eax
 ;jnz loop_start
 jnz loop_start
 loop_end:
+;insert breakpoint
+int3
 pop r12
 pop rbx
 leave

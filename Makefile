@@ -25,7 +25,7 @@ all: ${ELFS}
 ${ELFS}: %:%.c
 	gcc $< -g -o $@
 
-brainfuck-dynasm-jit.c: brainfuck-dynasm.c
+brainfuck-dynasm-jit.c: brainfuck-dynasm.dasc
 	git submodule update
 	luajit LuaJIT/dynasm/dynasm.lua -o $@ -D X64 $<
 
