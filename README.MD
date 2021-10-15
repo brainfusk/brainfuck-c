@@ -83,40 +83,54 @@
    ```
    文件清单：
    ```shell
-   # 生成的jit代码的二进制和对应的汇编格式代码，使用gdb获取
-   brainfuck-jit-disas.txt
-   # 生成jit所需汇编指令列表，用于获取汇编指令的16进制格式
-   commands.asm
-   # commands.asm经过nasm汇编后的反汇编格式，方便对照编写相关指令
-   commands.objdump
-   # 用于获取jit代码的二进制和汇编形式的gdb命令文件
-   gdb.txt
-   # 编译 运行 内存检查 生成jit辅助信息
-   Makefile
-   # 常见brainfuck程序集合
-   programs/
+   tree -I ".idea|cmake-*|LuaJIT|*.bf"
+   # memcheck*.xml为valgind内存泄漏检测结果文件 (make memcheck)
+   # cachegrind.* 为valgind CPU缓存检测和分支预测输出(make cachegrind)
+   ├── CMakeLists.txt # cmake配置文件，clion调试使用
+   ├── Dockerfile # 用于生成开发，远程调试的容器环境
+   ├── LICENSE
+   ├── Makefile # 编译 运行 内存检查 生成jit辅助信息
+   ├── README.MD
+   ├── brainfuck-dynasm.dasc # 使用dynasm编写的jit解释器
+   ├── brainfuck-jit-disas.txt # 使用gdb获取的生成的jit代码的二进制和对应的汇编格式代码
+   ├── brainfuck-jit.c # 手写的jit解释器
+   ├── brainfuck-onepass.c # 单趟遍历实现的解释器
+   ├── brainfuck.c # twopass解释器
+   ├── commands.asm # 生成jit所需汇编指令列表，用于获取汇编指令的16进制格式
+   ├── commands.objdump # commands.asm经过nasm汇编后的反汇编格式，方便对照编写相关指令
+   ├── gdb.txt # 用于获取jit代码的二进制和汇编形式的gdb命令文件
+   └── programs # 常见brainfuck程序集合
    ```
    
 9. 性能对比
 
    运行programs/mandelbrot.bf性能对比
 
-    |     程序      |       优化       | 耗时/s |
-    | :-----------: | :--------------: | :----: |
-    |   brainfuck   |       -o0        |        |
-    |   brainfuck   |       -o1        |        |
-    |   brainfuck   |       -o2        |        |
-    |   brainfuck   |       -o3        |        |
-    | brainfuck-jit | peephole/jit/-o0 |        |
-    | brainfuck-jit |       -o1        |        |
-    | brainfuck-jit |       -o2        |        |
-    | brainfuck-jit |       -o3        |        |
+     |         程序         | 优化 | 耗时/s |
+     | :------------------: | :--: | :----: |
+     |      brainfuck       | -o0  |   77   |
+     |      brainfuck       | -o1  |   51   |
+     |      brainfuck       | -o2  | 38.52  |
+     |      brainfuck       | -o3  | 38.11  |
+     |  brainfuck-onepass   | -o0  |   73   |
+     |  brainfuck-onepass   | -o1  | 49.69  |
+     |  brainfuck-onepass   | -o2  | 42.45  |
+     |  brainfuck-onepass   | -o3  | 44.17  |
+     |    brainfuck-jit     | -o0  |  1.28  |
+     |    brainfuck-jit     | -o1  |  1.15  |
+     |    brainfuck-jit     | -o2  |  1.14  |
+     |    brainfuck-jit     | -o3  |  1.31  |
+     | brainfuck-dynasm-jit | -o0  |  1.51  |
+     | brainfuck-dynasm-jit | -o1  |  1.51  |
+     | brainfuck-dynasm-jit | -o2  |  1.52  |
+     | brainfuck-dynasm-jit | -o3  |  1.52  |
 
-10. 参考列表
+
+11. 参考列表
 
     https://github.com/prplz/brainfuck-jit
 
-11. 跳转指令的区别:
+12. 跳转指令的区别:
 
     10.1 指令0x74 0x75 与 0x0f84 0x0f85的区别:
 
@@ -125,12 +139,12 @@
     0x74   JE rel8(8位有符号数)
 
     0x0f84 JE rel32(32位有符号数)
-12. 性能分析
+13. 性能分析
 
     12.1 jit性能更好原因分析
 
     指令更少
-13. git子模块使用
+14. git子模块使用
 
     ```shell
     # 添加子模块
@@ -140,4 +154,3 @@
     # 设置子模块同步的分支 会在.gitmodules文件新增'branch = v2.1'
     git config -f .gitmodules submodule.LuaJIT.branch v2.1
     ```
-    

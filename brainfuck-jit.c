@@ -17,11 +17,6 @@
 
 #define die(...) do { fprintf(stderr, __VA_ARGS__); fputc('\n', stderr); exit(EXIT_FAILURE); } while (0)
 
-
-int debug() {
-    return 1;
-}
-
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         die("must input a bf file");
@@ -312,8 +307,6 @@ int main(int argc, char *argv[]) {
     if (mprotect(code, code_len, PROT_EXEC | PROT_READ) == -1) {
         die("Error making program memory executable: %s.", strerror(errno));
     }
-    //gdb debug断点使用,b debug,避免使用代码行数这种不可扩展的方式设置断点
-    debug();
 
     ((void (*)()) code)();
 

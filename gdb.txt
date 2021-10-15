@@ -1,10 +1,10 @@
 # 关闭输出分页，避免阻塞命令
 set pagination off
 # 断点打在执行jit代码之前
-b debug
+b mprotect
 # 开始执行
 r
-# step over debug()
+# step over mprotect
 finish
 # 临时将gdb命令输出定向到指定文件
 set logging file brainfuck-jit-disas.txt

@@ -50,6 +50,7 @@ RUN set -x \
       rsync \
       tar \
       python \
+      time \
     && apt-get clean
 
 RUN ( \

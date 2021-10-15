@@ -148,3 +148,4 @@ vgcore.*
 cachegrind.*
 core*
 memcheck.*
+performance-*.txt
