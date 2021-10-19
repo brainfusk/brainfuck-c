@@ -41,6 +41,7 @@ run:${ELFS}
 	for elf in $^;  \
 	do \
 	echo `date` >> ${PERFORMANCE_FILE}; \
+	echo "start run $$elf"; \
 	echo $$elf >> ${PERFORMANCE_FILE}; \
 	(time ./$$elf ${BF_PROGRAM}) 2>> ${PERFORMANCE_FILE}; \
 	echo "\n" >> ${PERFORMANCE_FILE}; \
@@ -49,7 +50,7 @@ run:${ELFS}
 mandelbrot sierpinski:${ELFS}
 	for level in ${LEVELS}; \
 	do \
-	echo "start run $< by opt level $$level" \
+	echo "start run $< by opt level $$level"; \
   	make clean-elf; \
     make OPT=$$level BF_PROGRAM=programs/$@.bf run; \
 	done

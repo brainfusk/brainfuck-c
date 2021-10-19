@@ -52,7 +52,9 @@ static void(* bf_compile(const char* program) )(bf_state_t*)
   int nloops = 0;
   int n;
   dasm_State* d;
+  //动态label的初始数量，达到后则加倍
   unsigned npc = 8;
+  //当前使用的动态label的索引
   unsigned nextpc = 0;
   |.if X64
   |.arch x64
@@ -192,9 +194,12 @@ static void(* bf_compile(const char* program) )(bf_state_t*)
         | mov byte [aPtr], al
       } else {
         if(nextpc == npc) {
+          //double the npc
           npc *= 2;
           dasm_growpc(&d, npc);
         }
+        // 02...31
+        // [[...]]
         | cmp byte [aPtr], 0
         | jz =>nextpc+1
         |=>nextpc:
