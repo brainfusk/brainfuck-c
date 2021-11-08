@@ -18,11 +18,11 @@
    
 3. jit运行原理
 
-   2.1 mmap + mprotect
+   申请一段按PAGE_SIZE对齐的内存,写入jit二进制代码，调用系统调用使这段内存变为可读可执行，然后把这段内存当做函数执行即可。
 
-   2.2 memalign + mprotect (推荐)
+   2.1 mmap + mprotect 或 memalign + mprotect (推荐)
 
-   2.3 汇编代码设计思路
+   2.2 汇编代码设计思路
    ```text
    使用sub rsp,0x10000保留栈空间作为数据区
    r12用作数据区起始位置指针
@@ -47,10 +47,12 @@
 
    以汇编格式编码指定范围内存并显示(适用于查看生成的jit代码，可同时显示二进制和对应汇编代码)
    ```shell
-   gdb > b debug
+   gdb > b mprotect
+   gdb > r
    gdb > finish
    gdb > disas /mr code,code+pc
    ```
+   可使用make support自动运行上述命令序列生成jit汇编代码，汇编代码存储于brainfuck-jit-disas.txt
    
 5. Linux core dump开启与gdb调试
 
